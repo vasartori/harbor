@@ -16,12 +16,12 @@
 
 set -e
 
-POSTGRES_PASSWORD=${DB_PWD}
+POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-${DB_PWD}}
 PG_DB_PORT=${PG_DB_PORT:-"5432"}
 
 if [ -n ${PG_DB_HOST} ]; then
     PGDBCNF="-h ${PG_DB_HOST} -p ${PG_DB_PORT}"
-    echo "${PG_DB_HOST}:${PG_DB_PORT}:*:${POSTGRES_USER}:${POSTGRES_PASSWORD}" > ~/.pgpass
+    echo "${PG_DB_HOST}:${PG_DB_PORT}:*:*:${POSTGRES_PASSWORD}" > ~/.pgpass
     chmod 0600 ~/.pgpass
 else
     PGDBCNF=""
