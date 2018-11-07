@@ -1,4 +1,4 @@
-// Copyright (c) 2017 VMware, Inc. All Rights Reserved.
+// Copyright 2018 Project Harbor Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -140,7 +140,7 @@ func init() {
 	beego.Router("/api/repositories/*/tags/:tag/labels", &RepositoryLabelAPI{}, "get:GetOfImage;post:AddToImage")
 	beego.Router("/api/repositories/*/tags/:tag/labels/:id([0-9]+", &RepositoryLabelAPI{}, "delete:RemoveFromImage")
 	beego.Router("/api/repositories/*/tags/:tag", &RepositoryAPI{}, "delete:Delete;get:GetTag")
-	beego.Router("/api/repositories/*/tags", &RepositoryAPI{}, "get:GetTags")
+	beego.Router("/api/repositories/*/tags", &RepositoryAPI{}, "get:GetTags;post:Retag")
 	beego.Router("/api/repositories/*/tags/:tag/manifest", &RepositoryAPI{}, "get:GetManifests")
 	beego.Router("/api/repositories/*/signatures", &RepositoryAPI{}, "get:GetSignatures")
 	beego.Router("/api/repositories/top", &RepositoryAPI{}, "get:GetTopRepos")
@@ -161,6 +161,7 @@ func init() {
 	beego.Router("/api/ldap/users/import", &LdapAPI{ldapConfig: ldapTestConfig, useTestConfig: true}, "post:ImportUser")
 	beego.Router("/api/configurations", &ConfigAPI{})
 	beego.Router("/api/configurations/reset", &ConfigAPI{}, "post:Reset")
+	beego.Router("/api/configs", &ConfigAPI{}, "get:GetInternalConfig")
 	beego.Router("/api/email/ping", &EmailAPI{}, "post:Ping")
 	beego.Router("/api/replications", &ReplicationAPI{})
 	beego.Router("/api/labels", &LabelAPI{}, "post:Post;get:List")
@@ -615,6 +616,19 @@ func (a testapi) GetReposTags(authInfo usrInfo, repoName string) (int, interface
 		return 0, nil, err
 	}
 	return http.StatusOK, result, nil
+}
+
+// RetagImage retag image to another tag
+func (a testapi) RetagImage(authInfo usrInfo, repoName string, retag *apilib.Retag) (int, error) {
+	_sling := sling.New().Post(a.basePath)
+
+	path := fmt.Sprintf("/api/repositories/%s/tags", repoName)
+
+	_sling = _sling.Path(path)
+	_sling = _sling.BodyJSON(retag)
+
+	httpStatusCode, _, err := request(_sling, jsonAcceptHeader, authInfo)
+	return httpStatusCode, err
 }
 
 // Get manifests of a relevant repository
@@ -1082,6 +1096,18 @@ func (a testapi) GetConfig(authInfo usrInfo) (int, map[string]*value, error) {
 	_sling := sling.New().Base(a.basePath).Get("/api/configurations")
 
 	cfg := map[string]*value{}
+
+	code, body, err := request(_sling, jsonAcceptHeader, authInfo)
+	if err == nil && code == 200 {
+		err = json.Unmarshal(body, &cfg)
+	}
+	return code, cfg, err
+}
+
+func (a testapi) GetInternalConfig(authInfo usrInfo) (int, map[string]interface{}, error) {
+	_sling := sling.New().Base(a.basePath).Get("/api/configs")
+
+	cfg := map[string]interface{}{}
 
 	code, body, err := request(_sling, jsonAcceptHeader, authInfo)
 	if err == nil && code == 200 {

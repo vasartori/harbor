@@ -1,4 +1,4 @@
-// Copyright (c) 2017 VMware, Inc. All Rights Reserved.
+// Copyright 2018 Project Harbor Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -71,6 +71,17 @@ func (c *ConfigAPI) Get() {
 	}
 
 	c.Data["json"] = m
+	c.ServeJSON()
+}
+
+// GetInternalConfig returns internal configurations
+func (c *ConfigAPI) GetInternalConfig() {
+	configs, err := config.GetSystemCfg()
+	if err != nil {
+		log.Errorf("failed to get configurations: %v", err)
+		c.CustomAbort(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+	}
+	c.Data["json"] = configs
 	c.ServeJSON()
 }
 

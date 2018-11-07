@@ -1,10 +1,23 @@
-// Copyright Project Harbor Authors. All rights reserved.
+// Copyright Project Harbor Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 // Package errs define some system errors with specified types.
 package errs
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 const (
@@ -38,6 +51,8 @@ const (
 	NoObjectFoundErrorCode
 	// UnAuthorizedErrorCode is code for the error of unauthorized accessing
 	UnAuthorizedErrorCode
+	// ResourceConflictsErrorCode is code for the error of resource conflicting
+	ResourceConflictsErrorCode
 )
 
 // baseError ...
@@ -171,6 +186,22 @@ func NoObjectFoundError(object string) error {
 	}
 }
 
+// conflictError is designed for the case of resource conflicting
+type conflictError struct {
+	baseError
+}
+
+// ConflictError is error for the case of resource conflicting
+func ConflictError(object string) error {
+	return conflictError{
+		baseError{
+			Code:        ResourceConflictsErrorCode,
+			Err:         "conflict",
+			Description: fmt.Sprintf("the submitting resource is conflicted with existing one %s", object),
+		},
+	}
+}
+
 // IsJobStoppedError return true if the error is jobStoppedError
 func IsJobStoppedError(err error) bool {
 	_, ok := err.(jobStoppedError)
@@ -186,5 +217,11 @@ func IsJobCancelledError(err error) bool {
 // IsObjectNotFoundError return true if the error is objectNotFoundError
 func IsObjectNotFoundError(err error) bool {
 	_, ok := err.(objectNotFoundError)
+	return ok
+}
+
+// IsConflictError returns true if the error is conflictError
+func IsConflictError(err error) bool {
+	_, ok := err.(conflictError)
 	return ok
 }

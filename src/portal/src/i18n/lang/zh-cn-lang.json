@@ -51,7 +51,7 @@
     },
     "TOOLTIP": {
         "EMAIL": "请使用正确的邮箱地址，比如name@example.com。",
-        "USER_NAME": "不能包含特殊字符且长度不能超过20。",
+        "USER_NAME": "不能包含特殊字符且长度不能超过255。",
         "FULL_NAME": "长度不能超过20。",
         "COMMENT": "长度不能超过20。",
         "CURRENT_PWD": "当前密码为必填项。",
@@ -67,7 +67,8 @@
         "EMAIL_EXISTING": "邮件地址已经存在。",
         "USER_EXISTING": "用户名已经存在。",
         "RULE_USER_EXISTING": "名称已经存在。",
-        "EMPTY": "名称为必填项"
+        "EMPTY": "名称为必填项",
+        "NONEMPTY": "不能为空"
     },
     "PLACEHOLDER": {
         "CURRENT_PWD": "输入当前密码",
@@ -171,7 +172,7 @@
         "UNKNOWN_ERROR": "创建项目时发生未知错误。",
         "OF": "共计",
         "ITEMS": "条记录",
-        "DELETION_TITLE": "删除项目确认",
+        "DELETION_TITLE": "移除项目成员确认",
         "DELETION_SUMMARY": "你确认删除项目 {{param}}？",
         "FILTER_PLACEHOLDER": "过滤项目",
         "REPLICATION_RULE": "复制规则",
@@ -378,15 +379,15 @@
         "IMMEDIATE": "即刻",
         "DAILY": "每天",
         "WEEKLY": "每周",
-        "SETTING":"设置",
-        "TRIGGER":"触发条件",
-        "TARGETS":"目标",
+        "SETTING": "设置",
+        "TRIGGER": "触发条件",
+        "TARGETS": "目标",
         "MODE": "模式",
         "TRIGGER_MODE": "触发模式",
         "SOURCE_PROJECT": "源项目",
         "REPLICATE": "复制",
-        "DELETE_REMOTE_IMAGES":"删除本地镜像时同时也删除远程的镜像。",
-        "REPLICATE_IMMEDIATE":"立即复制现有的镜像。",
+        "DELETE_REMOTE_IMAGES": "删除本地镜像时同时也删除远程的镜像。",
+        "REPLICATE_IMMEDIATE": "立即复制现有的镜像。",
         "NEW": "新增",
         "NAME_TOOLTIP": "项目名称由小写字符、数字和._-组成且至少2个字符并以字符或者数字开头。",
         "DELETED_LABEL_INFO": "过滤项有被删除的标签 {{param}} , 点击保存按钮更新过滤项使规则可用。",
@@ -446,6 +447,7 @@
         "TAG": "标签",
         "SIZE": "大小",
         "VULNERABILITY": "漏洞",
+        "BUILD_HISTORY": "构建历史",
         "SIGNED": "已签名",
         "AUTHOR": "作者",
         "CREATED": "创建时间",
@@ -469,10 +471,13 @@
         "LABELS": "标签",
         "ADD_TO_IMAGE": "添加标签到此镜像",
         "ADD_LABELS": "添加标签",
+        "RETAG": "复制镜像",
         "FILTER_BY_LABEL": "过滤标签",
         "ACTION": "操作",
         "DEPLOY": "部署",
-        "ADDITIONAL_INFO": "添加信息"
+        "ADDITIONAL_INFO": "添加信息",
+        "REPO_NAME": "镜像仓库",
+        "MARKDOWN": "支持使用Markdown进行样式设置"
     },
     "HELM_CHART": {
         "HELMCHARTS": "Charts",
@@ -489,6 +494,7 @@
         "SRC_REPO": "源仓库",
         "CREATED": "创建时间",
         "MAINTAINERS": "维护者",
+        "OTHER_MAINTAINERS": "{{ name }} 与其他 {{ number }} 位",
         "PULLS": "拉取数",
         "VERSION": "版本",
         "INSTALL": "安装",
@@ -527,6 +533,7 @@
         "PROV_FILE": "Prov 文件",
         "READY": "就绪",
         "NOT_READY": "未就绪",
+        "LABELS": "标签",
         "STATUS": "状态"
     },
     "ALERT": {
@@ -582,6 +589,7 @@
         "PRO_CREATION_ADMIN": "仅管理员",
         "ROOT_CERT": "镜像库根证书",
         "ROOT_CERT_LINK": "下载",
+        "REGISTRY_CERTIFICATE": "注册证书",
         "TOOLTIP": {
             "SELF_REGISTRATION_ENABLE": "激活注册功能。",
             "SELF_REGISTRATION_DISABLE": "禁用注册功能。",
@@ -748,7 +756,9 @@
         "COPY_ERROR": "拷贝失败，请尝试手动拷贝。",
         "FILTER_FOR_TAGS": "过滤项目",
         "AUTHOR": "作者",
-        "LABELS": "标签"
+        "LABELS": "标签",
+        "CREATION": "创建时间",
+        "COMMAND": "命令"
     },
     "LABEL": {
         "LABEL": "标签",
@@ -759,9 +769,9 @@
         "DELETE": "删除",
         "LABEL_NAME": "标签名字",
         "COLOR": "颜色",
-        "FILTER_Label_PLACEHOLDER": "过滤标签",
+        "FILTER_LABEL_PLACEHOLDER": "过滤标签",
         "NO_LABELS": "无标签",
-        "DELETION_TITLE_TARGET":"删除标签确认",
+        "DELETION_TITLE_TARGET": "删除标签确认",
         "DELETION_SUMMARY_TARGET": "确认删除标签 {{param}}?",
         "PLACEHOLDER": "未发现任何标签!",
         "NAME_ALREADY_EXISTS": "标签名已存在。"
@@ -811,33 +821,32 @@
     "SERVER_ERROR": "服务器出现内部错误，请求无法完成。",
     "INCONRRECT_OLD_PWD": "旧密码不正确。",
     "UNKNOWN": "未知",
-    "STATUS":"状态",
-    "START_TIME": "开始时间",
-    "END_TIME": "结束时间",
-    "DETAILS":"详情",
-    "PENDING":"未开始",
-    "FINISHED":"已完成",
-    "STOPPED":"已停止",
-    "RUNNING":"执行中",
-    "ERROR":"错误",
+    "STATUS": "状态",
+    "START_TIME": "创建时间",
+    "UPDATE_TIME": "更新时间",
+    "LOGS": "日志",
+    "PENDING": "未开始",
+    "FINISHED": "已完成",
+    "STOPPED": "已停止",
+    "RUNNING": "执行中",
+    "ERROR": "错误",
     "SCHEDULE": {
         "NONE": "无",
         "DAILY": "每天",
         "WEEKLY": "每周",
-        "MANUAL": "手动"
-    }, 
+        "MANUAL": "手动",
+        "ON": " ",
+        "AT": " "
+    },
     "GC": {
         "CURRENT_SCHEDULE": "当前定时任务",
-        "ON": " ",
-        "AT": " ",
         "GC_NOW": "立即清理垃圾",
-        "JOB_LIST":"任务列表",
-        "JOB_ID":"任务ID",
+        "JOB_HISTORY": "历史任务",
+        "JOB_ID": "任务ID",
         "TRIGGER_TYPE": "触发类型",
         "LATEST_JOBS": "最新的 {{param}} 个任务",
-        "LOG_DETAIL":"日志详情",
-        "MSG_SUCCESS":"垃圾回收成功",
-        "MSG_SCHEDULE_SET":"垃圾回收定时任务设置成功",
-        "MSG_SCHEDULE_RESET":"垃圾回收定时任务已被重置"
+        "MSG_SUCCESS": "垃圾回收成功",
+        "MSG_SCHEDULE_SET": "垃圾回收定时任务设置成功",
+        "MSG_SCHEDULE_RESET": "垃圾回收定时任务已被重置"
     }
 }

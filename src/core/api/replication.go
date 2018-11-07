@@ -1,4 +1,4 @@
-// Copyright (c) 2017 VMware, Inc. All Rights Reserved.
+// Copyright 2018 Project Harbor Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,8 +64,9 @@ func (r *ReplicationAPI) Post() {
 	}
 
 	count, err := dao.GetTotalCountOfRepJobs(&models.RepJobQuery{
-		PolicyID: replication.PolicyID,
-		Statuses: []string{models.RepOpTransfer, models.RepOpDelete},
+		PolicyID:   replication.PolicyID,
+		Statuses:   []string{models.JobPending, models.JobRunning},
+		Operations: []string{models.RepOpTransfer, models.RepOpDelete},
 	})
 	if err != nil {
 		r.HandleInternalServerError(fmt.Sprintf("failed to filter jobs of policy %d: %v",

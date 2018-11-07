@@ -37,6 +37,35 @@ Test Case - Vulnerability Data Not Ready
     Switch To Configure
     Go To Vulnerability Config
     Vulnerability Not Ready Config Hint
+
+Test Case - Garbage Collection
+    Init Chrome Driver
+    ${d}=   Get Current Date    result_format=%m%s
+    
+    Sign In Harbor  ${HARBOR_URL}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}
+    Create An New Project  project${d}
+    Push Image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  project${d}  hello-world
+    Sleep  2
+    Go Into Project  project${d}
+    Delete Repo  project${d}
+
+    Switch To Garbage Collection
+    Click GC Now
+    Logout Harbor
+    Sleep  2
+    Sign In Harbor  ${HARBOR_URL}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}
+    Switch To Garbage Collection
+    Sleep  1
+    Wait Until Page Contains  Finished
+
+    ${rc}  ${output}=  Run And Return Rc And Output  curl -u ${HARBOR_ADMIN}:${HARBOR_PASSWORD} -i --insecure -H "Content-Type: application/json" -X GET "https://${ip}/api/system/gc/1/log"
+    Log To Console  ${output}
+    Should Be Equal As Integers  ${rc}  0
+    Should Contain  ${output}  3 blobs eligible for deletion
+    Should Contain  ${output}  Deleting blob:
+    Should Contain  ${output}  success to run gc in job.
+
+    Close Browser
     
 Test Case - Create An New Project
     Init Chrome Driver
@@ -68,6 +97,7 @@ Test Case - Read Only Mode
     Cannot Push image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  project${d}  busybox:latest
 
     Disable Read Only
+    Sleep  5
     Push image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  project${d}  busybox:latest
     Close Browser
 
@@ -78,13 +108,14 @@ Test Case - Repo Size
     Push Image With Tag  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  library  alpine  2.6  2.6
     Go Into Project  library
     Go Into Repo  alpine
-    Page Should Contain  1.92MB 
+    Wait Until Page Contains  1.92MB
     Close Browser
 
 Test Case - Staticsinfo
     Init Chrome Driver
     ${d}=  Get Current Date    result_format=%m%s
     Sign In Harbor  ${HARBOR_URL}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}
+    Wait Until Element Is Visible  //project/div/div/div[1]/div/statistics-panel/div/div[2]/div[1]/div[2]/div[2]/statistics/div/span[1]
     ${privaterepocount1}=  Get Statics Private Repo
     ${privateprojcount1}=  Get Statics Private Project
     ${publicrepocount1}=  Get Statics Public Repo
@@ -96,18 +127,21 @@ Test Case - Staticsinfo
     Push Image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  private${d}  hello-world
     Push Image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  public${d}  hello-world
     Reload Page
-    ${privaterepocount2}=  Get Statics Private Repo
-    ${privateprojcount2}=  get statics private project
-    ${publicrepocount2}=  get statics public repo
-    ${publicprojcount2}=  get statics public project
-    ${totalrepocount2}=  get statics total repo
-    ${totalprojcount2}=  get statics total project
     ${privateprojcount}=  evaluate  ${privateprojcount1}+1
     ${privaterepocount}=  evaluate  ${privaterepocount1}+1
     ${publicprojcount}=  evaluate  ${publicprojcount1}+1
     ${publicrepocount}=  evaluate  ${publicrepocount1}+1
     ${totalrepocount}=  evaluate  ${totalrepocount1}+2
     ${totalprojcount}=  evaluate  ${totalprojcount1}+2
+    Wait Until Element Is Visible  //project/div/div/div[1]/div/statistics-panel/div/div[2]/div[1]/div[2]/div[2]/statistics/div/span[1]
+    ${privaterepocountStr}=  Convert To String  ${privaterepocount}
+    Wait Until Element Contains  //project/div/div/div[1]/div/statistics-panel/div/div[2]/div[1]/div[2]/div[2]/statistics/div/span[1]  ${privaterepocountStr}
+    ${privaterepocount2}=  Get Statics Private Repo
+    ${privateprojcount2}=  get statics private project
+    ${publicrepocount2}=  get statics public repo
+    ${publicprojcount2}=  get statics public project
+    ${totalrepocount2}=  get statics total repo
+    ${totalprojcount2}=  get statics total project
     Should Be Equal As Integers  ${privateprojcount2}  ${privateprojcount}
     Should be equal as integers  ${privaterepocount2}  ${privaterepocount}
     Should be equal as integers  ${publicprojcount2}  ${publicprojcount}
@@ -265,6 +299,8 @@ Test Case - User View Logs
     Go Into Project  project${d}
     Delete Repo  project${d}
 
+    Sleep  3
+
     Go To Project Log
     Advanced Search Should Display
 
@@ -383,6 +419,7 @@ Test Case - Delete Multi Project
     Create An New Project  projectb${d}
     Push Image  ${ip}  user012  Test1@34  projecta${d}  hello-world
     Filter Object  project
+    Wait Until Element Is Not Visible  //clr-datagrid/div/div[2]
     Multi-delete Object  projecta  projectb
     # Verify delete project with image should not be deleted directly
     Delete Fail  projecta${d}
@@ -534,10 +571,10 @@ Test Case - Scan As An Unprivileged User
 
 Test Case - Scan Image With Empty Vul
     Init Chrome Driver
-    Push Image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  library  hello-world
+    Push Image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  library  busybox
     Sign In Harbor  ${HARBOR_URL}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}
     Go Into Project  library
-    Go Into Repo  hello-world
+    Go Into Repo  busybox
     Scan Repo  latest  Succeed
     Move To Summary Chart
     Wait Until Page Contains  Unknow
@@ -553,19 +590,6 @@ Test Case - Manual Scan All
     Back To Projects
     Go Into Project  library
     Go Into Repo  redis
-    Summary Chart Should Display  latest
-    Close Browser
-
-Test Case - Scan Image On Push
-    Init Chrome Driver
-    Sign In Harbor  ${HARBOR_URL}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}
-    Go Into Project  library
-    Goto Project Config
-    Enable Scan On Push
-    Push Image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  library  memcached
-    Back To Projects
-    Go Into Project  library
-    Go Into Repo  memcached
     Summary Chart Should Display  latest
     Close Browser
 
@@ -598,32 +622,18 @@ Test Case - View Scan Error
 
 Test Case - Project Level Image Serverity Policy
     Init Chrome Driver
-    Push Image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  library  haproxy
     Sign In Harbor  ${HARBOR_URL}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}
-    Go Into Project  library
+    ${d}=  get current date  result_format=%m%s
+    Create An New Project  project${d}
+    Push Image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  project${d}  haproxy
+    Go Into Project  project${d}
     Go Into Repo  haproxy
     Scan Repo  latest  Succeed
     Back To Projects
-    Go Into Project  library
+    Go Into Project  project${d}
     Set Vulnerabilty Serverity  0
-    Cannot pull image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  library  haproxy
+    Cannot pull image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  project${d}  haproxy
     Close Browser
-
-Test Case - Admin Push Signed Image
-    Enable Notary Client
-
-    ${rc}  ${output}=  Run And Return Rc And Output  docker pull hello-world:latest
-    Log  ${output}
-
-    Push image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  library  hello-world:latest
-    ${rc}  ${output}=  Run And Return Rc And Output  ./tests/robot-cases/Group0-Util/notary-push-image.sh ${ip} ${notaryServerEndpoint}
-    Log  ${output}
-    Should Be Equal As Integers  ${rc}  0
-
-    ${rc}  ${output}=  Run And Return Rc And Output  curl -u admin:Harbor12345 -s --insecure -H "Content-Type: application/json" -X GET "https://${ip}/api/repositories/library/tomcat/signatures"
-    Log To Console  ${output}
-    Should Be Equal As Integers  ${rc}  0
-    Should Contain  ${output}  sha256
 
 Test Case - List Helm Charts
     Init Chrome Driver
@@ -655,4 +665,34 @@ Test Case - List Helm Charts
     Page Should Contain Element  ${value_content}
 
     Go Back To Versions And Delete
+    Close Browser
+
+Test Case - Admin Push Signed Image
+    Enable Notary Client
+
+    ${rc}  ${output}=  Run And Return Rc And Output  docker pull hello-world:latest
+    Log  ${output}
+
+    Push image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  library  hello-world:latest
+    ${rc}  ${output}=  Run And Return Rc And Output  ./tests/robot-cases/Group0-Util/notary-push-image.sh ${ip} ${notaryServerEndpoint}
+    Log  ${output}
+    Should Be Equal As Integers  ${rc}  0
+
+    ${rc}  ${output}=  Run And Return Rc And Output  curl -u admin:Harbor12345 -s --insecure -H "Content-Type: application/json" -X GET "https://${ip}/api/repositories/library/tomcat/signatures"
+    Log To Console  ${output}
+    Should Be Equal As Integers  ${rc}  0
+    Should Contain  ${output}  sha256
+
+Test Case - Scan Image On Push
+    Wait Unitl Vul Data Ready  ${HARBOR_URL}  7200  30
+    Init Chrome Driver
+    Sign In Harbor  ${HARBOR_URL}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}
+    Go Into Project  library
+    Goto Project Config
+    Enable Scan On Push
+    Push Image  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  library  memcached
+    Back To Projects
+    Go Into Project  library
+    Go Into Repo  memcached
+    Summary Chart Should Display  latest
     Close Browser

@@ -285,7 +285,6 @@ export interface Label {
   scope: string;
   project_id: number;
 }
-
 export interface CardItemEvent {
   event_type: string;
   item: any;
@@ -297,10 +296,15 @@ export interface ScrollPosition {
   sT: number;
   cH: number;
 }
-
+export interface HelmChartSearchResultItem {
+  Name: string;
+  Score: number;
+  Chart: HelmChartVersion;
+}
 export interface HelmChartItem {
   name: string;
   total_versions: number;
+  latest_version: string;
   created: string;
   icon: string;
   home: string;
@@ -321,9 +325,11 @@ export interface HelmChartVersion {
   engine: string;
   icon: string;
   appVersion: string;
+  apiVersion: string;
   urls: string[];
   created: string;
   digest: string;
+  labels: Label[];
   deprecated?: boolean;
 }
 
@@ -333,6 +339,7 @@ export interface HelmChartDetail {
   values: any;
   files: HelmchartFile;
   security: HelmChartSecurity;
+  labels: Label[];
 }
 
 export interface HelmChartMetaData {
@@ -374,4 +381,23 @@ export interface HelmChartSecurity {
 export interface HelmChartSignature {
   signed: boolean;
   prov_file: string;
+}
+
+/**
+ * The manifest of image.
+ *
+ **
+ * interface Manifest
+ */
+export interface Manifest {
+    manifset: Object;
+    config: string;
+}
+
+export interface RetagRequest {
+  targetProject: string;
+  targetRepo: string;
+  targetTag: string;
+  srcImage: string;
+  override: boolean;
 }

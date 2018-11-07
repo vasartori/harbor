@@ -26,20 +26,20 @@ import { debounceTime , distinctUntilChanged} from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { State, Comparator } from "@clr/angular";
 
-import { TagService, VulnerabilitySeverity, RequestQueryParams } from "../service/index";
+import { TagService, RetagService, VulnerabilitySeverity, RequestQueryParams } from "../service/index";
 import { ErrorHandler } from "../error-handler/error-handler";
 import { ChannelService } from "../channel/index";
 import {
-  ConfirmationTargets,
-  ConfirmationState,
-  ConfirmationButtons
+    ConfirmationTargets,
+    ConfirmationState,
+    ConfirmationButtons, Roles
 } from "../shared/shared.const";
 
 import { ConfirmationDialogComponent } from "../confirmation-dialog/confirmation-dialog.component";
 import { ConfirmationMessage } from "../confirmation-dialog/confirmation-message";
 import { ConfirmationAcknowledgement } from "../confirmation-dialog/confirmation-state-message";
 
-import {Label, Tag, TagClickEvent} from "../service/interface";
+import { Label, Tag, TagClickEvent, RetagRequest } from "../service/interface";
 
 import {
   toPromise,
@@ -52,10 +52,11 @@ import {
   clone,
 } from "../utils";
 
-import {CopyInputComponent} from "../push-image/copy-input.component";
-import {LabelService} from "../service/label.service";
-import {operateChanges, OperateInfo, OperationState} from "../operation/operate";
-import {OperationService} from "../operation/operation.service";
+import { CopyInputComponent } from "../push-image/copy-input.component";
+import { LabelService } from "../service/label.service";
+import { operateChanges, OperateInfo, OperationState } from "../operation/operate";
+import { OperationService } from "../operation/operation.service";
+import { ImageNameInputComponent } from "../image-name-input/image-name-input.component";
 
 export interface LabelState {
   iconsShow: boolean;
@@ -72,6 +73,7 @@ export class TagComponent implements OnInit, AfterViewInit {
 
   signedCon: {[key: string]: any | string[]} = {};
   @Input() projectId: number;
+  @Input() memberRoleID: number;
   @Input() repoName: string;
   @Input() isEmbedded: boolean;
 
@@ -90,14 +92,17 @@ export class TagComponent implements OnInit, AfterViewInit {
   tags: Tag[];
 
   showTagManifestOpened: boolean;
+  retagDialogOpened: boolean;
   manifestInfoTitle: string;
   digestId: string;
   staticBackdrop = true;
   closable = false;
+  retagDialogClosable = true;
   lastFilteredTagName: string;
   inprogress: boolean;
   openLabelFilterPanel: boolean;
   openLabelFilterPiece: boolean;
+  retagSrcImage: string;
 
   createdComparator: Comparator<Tag> = new CustomComparator<Tag>("created", "date");
 
@@ -125,9 +130,11 @@ export class TagComponent implements OnInit, AfterViewInit {
   };
   filterOneLabel: Label = this.initFilter;
 
-
-  @ViewChild('confirmationDialog')
+  @ViewChild("confirmationDialog")
   confirmationDialog: ConfirmationDialogComponent;
+
+  @ViewChild("imageNameInput")
+  imageNameInput: ImageNameInputComponent;
 
   @ViewChild("digestTarget") textInput: ElementRef;
   @ViewChild("copyInput") copyInput: CopyInputComponent;
@@ -140,6 +147,7 @@ export class TagComponent implements OnInit, AfterViewInit {
   constructor(
     private errorHandler: ErrorHandler,
     private tagService: TagService,
+    private retagService: RetagService,
     private labelService: LabelService,
     private translateService: TranslateService,
     private ref: ChangeDetectorRef,
@@ -566,6 +574,29 @@ export class TagComponent implements OnInit, AfterViewInit {
     }
   }
 
+  retag(tags: Tag[]) {
+    if (tags && tags.length) {
+        this.retagDialogOpened = true;
+        this.retagSrcImage = this.repoName + ":" + tags[0].digest;
+    } else {
+      this.errorHandler.error("One tag should be selected before retag.");
+    }
+  }
+
+  onRetag() {
+    this.retagDialogOpened = false;
+    this.retagService.retag({
+        targetProject: this.imageNameInput.projectName.value,
+        targetRepo: this.imageNameInput.repoName.value,
+        targetTag: this.imageNameInput.tagName.value,
+        srcImage: this.retagSrcImage,
+        override: true
+     }).subscribe(response => {
+    }, error => {
+        this.errorHandler.error(error);
+    });
+  }
+
   deleteTags(tags: Tag[]) {
     if (tags && tags.length) {
       let tagNames: string[] = [];
@@ -724,5 +755,9 @@ export class TagComponent implements OnInit, AfterViewInit {
   // pull command
   onCpError($event: any): void {
       this.copyInput.setPullCommendShow();
+  }
+
+  public get developerRoleOrAbove(): boolean {
+      return this.memberRoleID === Roles.DEVELOPER || this.hasProjectAdminRole;
   }
 }

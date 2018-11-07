@@ -51,7 +51,7 @@
     },
     "TOOLTIP": {
         "EMAIL": "El email debe ser una dirección válida como nombre@ejemplo.com.",
-        "USER_NAME": "Debe tener una longitud máxima de 20 caracteres y no puede contener caracteres especiales.",
+        "USER_NAME": "Debe tener una longitud máxima de 255 caracteres y no puede contener caracteres especiales.",
         "FULL_NAME": "La longitud máxima debería ser de 20 caracteres.",
         "COMMENT": "La longitud del comentario debería ser menor de 20 caracteres.",
         "CURRENT_PWD": "Es obligatorio introducir la contraseña actual.",
@@ -68,6 +68,7 @@
         "USER_EXISTING": "Ese nombre de usuario ya existe.",
         "RULE_USER_EXISTING": "Name is already in use.",
         "EMPTY": "Name is required",
+        "NONEMPTY": "Can't be empty",
         "REPO_TOOLTIP": "Users can not do any operations to the images in this mode."
     },
     "PLACEHOLDER": {
@@ -378,15 +379,15 @@
         "IMMEDIATE": "Immediate",
         "DAILY": "Daily",
         "WEEKLY": "Weekly",
-        "SETTING":"Options",
-        "TRIGGER":"Triggering Condition",
-        "TARGETS":"Target",
+        "SETTING": "Options",
+        "TRIGGER": "Triggering Condition",
+        "TARGETS": "Target",
         "MODE": "Mode",
         "TRIGGER_MODE": "Trigger Mode",
         "SOURCE_PROJECT": "Source project",
         "REPLICATE": "Replicate",
-        "DELETE_REMOTE_IMAGES":"Delete remote images when locally deleted",
-        "REPLICATE_IMMEDIATE":"Replicate existing images immediately",
+        "DELETE_REMOTE_IMAGES": "Delete remote images when locally deleted",
+        "REPLICATE_IMMEDIATE": "Replicate existing images immediately",
         "NEW": "New",
         "NAME_TOOLTIP": "replication rule name should be at least 2 characters long with lower case characters, numbers and ._- and must be start with characters or numbers.",
         "DELETED_LABEL_INFO": "Deleted label(s) '{{param}}' referenced in the filter, click 'SAVE' to update the filter to enable this rule.",
@@ -446,6 +447,7 @@
         "TAG": "Etiqueta",
         "SIZE": "Size",
         "VULNERABILITY": "Vulnerability",
+        "BUILD_HISTORY": "Construir Historia",
         "SIGNED": "Firmada",
         "AUTHOR": "Autor",
         "CREATED": "Fecha de creación",
@@ -470,9 +472,12 @@
         "ADD_TO_IMAGE": "Add labels to this image",
         "FILTER_BY_LABEL": "Filter images by label",
         "ADD_LABELS": "Add labels",
+        "RETAG": "Retag",
         "ACTION": "ACTION",
         "DEPLOY": "DEPLOY",
-        "ADDITIONAL_INFO": "Add Additional Info"
+        "ADDITIONAL_INFO": "Add Additional Info",
+        "REPO_NAME": "Repository",
+        "MARKDOWN": "Styling with Markdown is supported"
     },
     "HELM_CHART": {
         "HELMCHARTS": "Charts",
@@ -489,6 +494,7 @@
         "SRC_REPO": "Source Repository",
         "CREATED": "Created Time",
         "MAINTAINERS": "Maintainers",
+        "OTHER_MAINTAINERS": "{{ name }} and {{ number }} others",
         "PULLS": "Pull Count",
         "VERSION": "Version",
         "APP_VERSION": "Application Version",
@@ -527,6 +533,7 @@
         "PROV_FILE": "Prov File",
         "READY": "Ready",
         "NOT_READY": "Not Ready",
+        "LABELS": "labels",
         "STATUS": "Status"
     },
     "ALERT": {
@@ -582,6 +589,7 @@
         "PRO_CREATION_ADMIN": "Solo Administradores",
         "ROOT_CERT": "Registro Certificado Raíz",
         "ROOT_CERT_LINK": "Descargar",
+        "REGISTRY_CERTIFICATE": "Certificado de registro",
         "TOOLTIP": {
             "SELF_REGISTRATION_ENABLE": "Activar registro.",
             "SELF_REGISTRATION_DISABLE": "Disable sign up.",
@@ -749,7 +757,10 @@
         "COPY_ERROR": "Copy failed, please try to manually copy.",
         "FILTER_FOR_TAGS": "Etiquetas de filtro",
         "AUTHOR": "Author",
-        "LABELS": "Labels"
+        "LABELS": "Labels",
+        "CREATION": "Tiempo de creación",
+        "COMMAND": "Mando"
+
     },
     "LABEL": {
         "LABEL": "Label",
@@ -760,7 +771,7 @@
         "DELETE": "Delete",
         "LABEL_NAME": "Label Name",
         "COLOR": "Color",
-        "FILTER_Label_PLACEHOLDER": "Filter Labels",
+        "FILTER_LABEL_PLACEHOLDER": "Filter Labels",
         "NO_LABELS": "No labels",
         "DELETION_TITLE_TARGET": "Confirm Label Deletion",
         "DELETION_SUMMARY_TARGET": "Do you want to delete {{param}}?",
@@ -768,13 +779,13 @@
         "NAME_ALREADY_EXISTS": "Label name already exists."
     },
     "WEEKLY": {
-    "MONDAY": "Monday",
-    "TUESDAY": "Tuesday",
-    "WEDNESDAY": "Wednesday",
-    "THURSDAY": "Thursday",
-    "FRIDAY": "Friday",
-    "SATURDAY": "Saturday",
-    "SUNDAY": "Sunday"
+        "MONDAY": "Monday",
+        "TUESDAY": "Tuesday",
+        "WEDNESDAY": "Wednesday",
+        "THURSDAY": "Thursday",
+        "FRIDAY": "Friday",
+        "SATURDAY": "Saturday",
+        "SUNDAY": "Sunday"
     },
     "OPERATION": {
         "LOCAL_EVENT": "Local Events",
@@ -812,33 +823,32 @@
     "SERVER_ERROR": "No hemos podido llevar a cabo la acción debido a un error interno.",
     "INCONRRECT_OLD_PWD": "La contraseña antigua no es correcta.",
     "UNKNOWN": "n/a",
-    "STATUS":"Status",
+    "STATUS": "Status",
     "START_TIME": "Start Time",
-    "END_TIME": "End Time",
-    "DETAILS":"Details",
-    "PENDING":"Pending",
-    "FINISHED":"Finished",
-    "STOPPED":"Stopped",
-    "RUNNING":"Running",
-    "ERROR":"Error",
+    "UPDATE_TIME": "Update Time",
+    "LOGS": "Logs",
+    "PENDING": "Pending",
+    "FINISHED": "Finished",
+    "STOPPED": "Stopped",
+    "RUNNING": "Running",
+    "ERROR": "Error",
     "SCHEDULE": {
         "NONE": "None",
         "DAILY": "Daily",
         "WEEKLY": "Weekly",
-        "MANUAL": "Manual"
-    }, 
+        "MANUAL": "Manual",
+        "ON": "on",
+        "AT": "at"
+    },
     "GC": {
         "CURRENT_SCHEDULE": "Current Schedule",
-        "ON": "on",
-        "AT": "at",
         "GC_NOW": "GC NOW",
-        "JOB_LIST":"GC Jobs List",
-        "JOB_ID":"Job ID",
+        "JOB_HISTORY": "GC Jobs History",
+        "JOB_ID": "Job ID",
         "TRIGGER_TYPE": "Trigger Type",
         "LATEST_JOBS": "Latest {{param}} Jobs",
-        "LOG_DETAIL":"Log Details",
-        "MSG_SUCCESS":"Garbage Collection Successful",
-        "MSG_SCHEDULE_SET":"Garbage Collection schedule has been set",
-        "MSG_SCHEDULE_RESET":"Garbage Collection schedule has been reset"
+        "MSG_SUCCESS": "Garbage Collection Successful",
+        "MSG_SCHEDULE_SET": "Garbage Collection schedule has been set",
+        "MSG_SCHEDULE_RESET": "Garbage Collection schedule has been reset"
     }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 VMware, Inc. All Rights Reserved.
+// Copyright 2018 Project Harbor Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -353,7 +353,7 @@ func (ua *UserAPI) modifiable() bool {
 // validate only validate when user register
 func validate(user models.User) error {
 
-	if isIllegalLength(user.Username, 1, 20) {
+	if isIllegalLength(user.Username, 1, 255) {
 		return fmt.Errorf("username with illegal length")
 	}
 	if isContainIllegalChar(user.Username, []string{",", "~", "#", "$", "%"}) {

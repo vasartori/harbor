@@ -1,4 +1,4 @@
-// Copyright (c) 2017 VMware, Inc. All Rights Reserved.
+// Copyright 2018 Project Harbor Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -106,6 +106,10 @@ func (n *NotificationHandler) Post() {
 					log.Errorf("Error happens when adding repository: %v", err)
 				}
 			}()
+			if !coreutils.WaitForManifestReady(repository, tag, 5) {
+				log.Errorf("Manifest for image %s:%s is not ready, skip the follow up actions.", repository, tag)
+				return
+			}
 
 			go func() {
 				image := repository + ":" + tag
@@ -158,23 +162,27 @@ func filterEvents(notification *models.Notification) ([]*models.Event, error) {
 			continue
 		}
 
-		// pull and push manifest by docker-client or vic
-		if (strings.HasPrefix(event.Request.UserAgent, "docker") || strings.HasPrefix(event.Request.UserAgent, vicPrefix)) &&
-			(event.Action == "pull" || event.Action == "push") {
+		if checkEvent(&event) {
 			events = append(events, &event)
-			log.Debugf("add event to collect: %s", event.ID)
-			continue
-		}
-
-		// push manifest by docker-client or job-service
-		if strings.ToLower(strings.TrimSpace(event.Request.UserAgent)) == "harbor-registry-client" && event.Action == "push" {
-			events = append(events, &event)
-			log.Debugf("add event to collect: %s", event.ID)
+			log.Debugf("add event to collection: %s", event.ID)
 			continue
 		}
 	}
 
 	return events, nil
+}
+
+func checkEvent(event *models.Event) bool {
+	// pull and push manifest by docker-client or vic or jib
+	if (strings.HasPrefix(event.Request.UserAgent, "docker") || strings.HasPrefix(event.Request.UserAgent, vicPrefix) || strings.HasPrefix(event.Request.UserAgent, "jib")) &&
+		(event.Action == "pull" || event.Action == "push") {
+		return true
+	}
+	// push manifest by docker-client or job-service
+	if strings.ToLower(strings.TrimSpace(event.Request.UserAgent)) == "harbor-registry-client" && event.Action == "push" {
+		return true
+	}
+	return false
 }
 
 func autoScanEnabled(project *models.Project) bool {

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 VMware, Inc. All Rights Reserved.
+// Copyright 2018 Project Harbor Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,6 +53,30 @@ func TestGetConfig(t *testing.T) {
 		t.Logf("failed to get system configurations: %v", err)
 	}
 	t.Logf("%v", ccc)
+}
+
+func TestInternalConfig(t *testing.T) {
+	fmt.Println("Testing internal configurations")
+	assert := assert.New(t)
+	apiTest := newHarborAPI()
+
+	// case 1: get configurations without admin role
+	code, _, err := apiTest.GetInternalConfig(*testUser)
+	if err != nil {
+		t.Fatalf("failed to get configurations: %v", err)
+	}
+
+	assert.Equal(401, code, "the status code of getting configurations with non-admin user should be 401")
+
+	// case 2: get configurations with admin role
+	code, _, err = apiTest.GetInternalConfig(*admin)
+	if err != nil {
+		t.Fatalf("failed to get configurations: %v", err)
+	}
+
+	if !assert.Equal(200, code, "the status code of getting configurations with admin user should be 200") {
+		return
+	}
 }
 
 func TestPutConfig(t *testing.T) {

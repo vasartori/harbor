@@ -33,7 +33,6 @@ import { AuthCheckGuard } from "./route/auth-user-activate.service";
 import { SignInGuard } from "./route/sign-in-guard-activate.service";
 import { SystemAdminGuard } from "./route/system-admin-activate.service";
 import { MemberGuard } from "./route/member-guard-activate.service";
-import { LeavingConfigRouteDeactivate } from "./route/leaving-config-deactivate.service";
 import { LeavingRepositoryRouteDeactivate } from "./route/leaving-repository-deactivate.service";
 
 import { PortValidatorDirective } from "./port.directive";
@@ -52,6 +51,7 @@ import { GaugeComponent } from "./gauge/gauge.component";
 import { ConfirmationDialogComponent } from "./confirmation-dialog/confirmation-dialog.component";
 import { ConfirmationDialogService } from "./confirmation-dialog/confirmation-dialog.service";
 import { MessageHandlerService } from "./message-handler/message-handler.service";
+import { ListChartVersionRoComponent } from './list-chart-version-ro/list-chart-version-ro.component';
 
 const uiLibConfig: IServiceConfig = {
   enablei18Support: true,
@@ -103,7 +103,8 @@ const uiLibConfig: IServiceConfig = {
     ListProjectROComponent,
     ListRepositoryROComponent,
     GaugeComponent,
-    DateValidatorDirective
+    DateValidatorDirective,
+    ListChartVersionRoComponent
   ],
   exports: [
     CoreModule,
@@ -124,7 +125,8 @@ const uiLibConfig: IServiceConfig = {
     GaugeComponent,
     DateValidatorDirective,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ListChartVersionRoComponent
   ],
   providers: [
     SessionService,
@@ -134,7 +136,6 @@ const uiLibConfig: IServiceConfig = {
     SystemAdminGuard,
     AuthCheckGuard,
     SignInGuard,
-    LeavingConfigRouteDeactivate,
     LeavingRepositoryRouteDeactivate,
     MemberGuard,
     MessageHandlerService,

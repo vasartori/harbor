@@ -1,4 +1,4 @@
-// Copyright (c) 2017 VMware, Inc. All Rights Reserved.
+// Copyright 2018 Project Harbor Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -181,7 +181,7 @@ func TestConfig(t *testing.T) {
 		t.Errorf("unexpected mode: %s != %s", mode, "db_auth")
 	}
 
-	if s := ScanAllPolicy(); s.Type != "daily" {
+	if s := ScanAllPolicy(); s.Type != "none" {
 		t.Errorf("unexpected scan all policy %v", s)
 	}
 

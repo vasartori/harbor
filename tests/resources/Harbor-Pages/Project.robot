@@ -84,9 +84,12 @@ Make Project Private
     Go Into Project  ${project name}    
     Sleep  1
     Click Element  xpath=//project-detail//a[contains(.,'Configuration')]
+    Sleep  1
     Checkbox Should Be Selected  xpath=//input[@name='public']
     Click Element  //clr-checkbox[@name='public']//label
+    Wait Until Element Is Enabled  //button[contains(.,'SAVE')]
     Click Element  //button[contains(.,'SAVE')]
+    Wait Until Page Contains  Configuration has been successfully saved
 
 Make Project Public
     [Arguments]  ${projectname}
@@ -95,25 +98,25 @@ Make Project Public
     Click Element  xpath=//project-detail//a[contains(.,'Configuration')]
     Checkbox Should Not Be Selected  xpath=//input[@name='public']
     Click Element  //clr-checkbox[@name='public']//label
+    Wait Until Element Is Enabled  //button[contains(.,'SAVE')]
     Click Element  //button[contains(.,'SAVE')]
+    Wait Until Page Contains  Configuration has been successfully saved
 
 Delete Repo
     [Arguments]  ${projectname}
     Click Element  xpath=//clr-dg-row[contains(.,"${projectname}")]//clr-checkbox//label
-    Sleep  1
+    Wait Until Element Is Enabled  //button[contains(.,"Delete")]
     Click Element  xpath=//button[contains(.,"Delete")]
-    Sleep  1
+    Wait Until Element Is Visible  //clr-modal//button[2]
     Click Element  xpath=//clr-modal//button[2]
-    Sleep  1
 
 Delete Repo on CardView
     [Arguments]  ${reponame}
-    Click Element  xpath=//hbr-gridview//span[contains(.,'${reponame}')]//clr-dropdown/button
-    Sleep  1
-    Click Element  xpath=//hbr-gridview//span[contains(.,'${reponame}')]//clr-dropdown/clr-dropdown-menu/button[contains(.,'Delete')]
-    Sleep  1
+    Click Element  //hbr-gridview//span[contains(.,'${reponame}')]//clr-dropdown/button
+    Wait Until Element Is Visible  //hbr-gridview//span[contains(.,'${reponame}')]//clr-dropdown/clr-dropdown-menu/button[contains(.,'Delete')]
+    Click Element  //hbr-gridview//span[contains(.,'${reponame}')]//clr-dropdown/clr-dropdown-menu/button[contains(.,'Delete')]
+    Wait Until Element Is Visible  //clr-modal//button[contains(.,'DELETE')]
     Click Element  //clr-modal//button[contains(.,'DELETE')]
-    Sleep  3
 
 Delete Project
     [Arguments]  ${projectname}

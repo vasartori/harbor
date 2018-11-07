@@ -24,13 +24,15 @@
       <form #repoInfoForm="ngForm">
         <div id="info-edit-button">
           <button class="btn btn-sm" [disabled]="editing || !hasProjectAdminRole " (click)="editInfo()" ><clr-icon shape="pencil" size="16"></clr-icon>&nbsp;{{'BUTTON.EDIT' | translate}}</button>
+          <img [src]="'../../../src/images/markdown.png'" class="markdown">
+          <span>{{ 'REPOSITORY.MARKDOWN' | translate }}</span>
         </div>
         <div *ngIf="!editing">
           <div *ngIf="!hasInfo()" class="no-info-div">
             <p>{{'REPOSITORY.NO_INFO' | translate }}<p>
           </div>
           <div *ngIf="hasInfo()" class="info-div">
-            <pre class="info-pre">{{ imageInfo }}</pre>
+            <div class="info-pre" [innerHTML]="imageInfo | markdown"></div>
           </div>
         </div>
         <div *ngIf="editing">
@@ -45,7 +47,10 @@
     </section>
     <section id="image" role="tabpanel" aria-labelledby="repo-image" [hidden]='!isCurrentTabContent("image")'>
       <div id=images-container>
-        <hbr-tag ngProjectAs="clr-dg-row-detail" (tagClickEvent)="watchTagClickEvt($event)" (signatureOutput)="saveSignatures($event)" class="sub-grid-custom" [repoName]="repoName" [registryUrl]="registryUrl" [withNotary]="withNotary" [withClair]="withClair" [withAdmiral]="withAdmiral" [hasSignedIn]="hasSignedIn" [hasProjectAdminRole]="hasProjectAdminRole" [isGuest]="isGuest" [projectId]="projectId"></hbr-tag>
+        <hbr-tag ngProjectAs="clr-dg-row-detail" (tagClickEvent)="watchTagClickEvt($event)" (signatureOutput)="saveSignatures($event)" class="sub-grid-custom"
+                 [repoName]="repoName" [registryUrl]="registryUrl" [withNotary]="withNotary" [withClair]="withClair"
+                 [withAdmiral]="withAdmiral" [hasSignedIn]="hasSignedIn" [hasProjectAdminRole]="hasProjectAdminRole"
+                 [isGuest]="isGuest" [projectId]="projectId" [memberRoleID]="memberRoleID"></hbr-tag>
       </div>
     </section>
   </div>

@@ -33,6 +33,20 @@
     }
 }
 
+clr-dg-action-bar {
+    clr-dropdown {
+        .btn {
+            @include dropdown-as-action-button;
+        }
+    }
+}
+
+hbr-resource-label-signpost {
+    display: inline-block;
+    max-height: 24px;
+    margin-left: 3px;
+}
+
 .card-container {
     margin-top: 21px;
     .card-header {
